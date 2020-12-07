@@ -1,2 +1,3 @@
 # Xthena
-A Crossword Game in Chinese
+> Chinese crossword puzzles, created for fun.
+---
