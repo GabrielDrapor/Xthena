@@ -25,3 +25,4 @@ pnpm-debug.log*
 .deta
 config.env
 __pycache__/
+tags
