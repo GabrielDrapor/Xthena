@@ -16,7 +16,8 @@ elTable.onkeydown = onKeyDown
 
 // main
 // TODO loading anim
-elTable.appendChild(<h1>loading...</h1>)
+const loading = <h1 class="loading">loading...</h1>
+document.body.append(loading)
 fetch('https://f97jw7.deta.dev/get-puzzle')
   .then(resp => resp.json())
   .then(data => {
@@ -24,6 +25,11 @@ fetch('https://f97jw7.deta.dev/get-puzzle')
     answerTable = genAnswerTable(maps)
     console.log(maps, answerTable)
     initTable()
+    setTimeout(() => {
+      loading.remove()
+      document.querySelector('main').style.opacity = 1
+      document.querySelector('main').style.transform = 'scale(1) translateY(0)'
+    })
   })
 
 // function defs
@@ -103,8 +109,8 @@ function check_answer(input) {
   }
 }
 
-function get_td_by_coor(x, y) {
-  return document.querySelector(`td[data-xy="${x},${y}"]`)
+function getInputByCoord(x, y) {
+  return document.querySelector(`input[data-xy="${x},${y}"]`)
 }
 
 // return [x,y]
@@ -138,10 +144,10 @@ function cell_click(event) {
   }
 
   getQuestionCoords(activeQuestion).forEach(({ x, y }) => {
-    const td = get_td_by_coor(x, y)
-    td.classList.add('selected')
-    const input = td.querySelector('input')
-    console.log('/?', !!input)
+    const input = getInputByCoord(x, y)
+    input.parentElement.classList.add('selected')
+    // const input = td.querySelector('input')
+
     input && (input['data-vh'] = clickedInput['data-vh'])
   })
 
@@ -151,7 +157,10 @@ function cell_click(event) {
 function showAnswer() {
   for (let x = 0; x < 10; x++)
     for (let y = 0; y < 10; y++) {
-      get_td_by_coor(x, y).innerText = getAnswer(x, y)
+      const input = getInputByCoord(x, y)
+      if (!input) continue
+      input.value = getAnswer(x, y)
+      input.disabled = true
     }
 }
 
