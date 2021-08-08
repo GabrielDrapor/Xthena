@@ -12,6 +12,7 @@ elBtnInit.onclick = initTable
 elBtnAnswer.onclick = showAnswer
 elTable.onclick = cell_click // 只需要绑一个点击回调
 elTable.oninput = onInput
+elTable.onkeydown = onKeyDown
 
 // main
 // TODO loading anim
@@ -47,24 +48,43 @@ function genAnswerTable(questions) {
   return t
 }
 
+function getSelectedInputs(targetEl, after = true) {
+  const [x0, y0] = getXY(targetEl)
+  return Array.from(elTable.querySelectorAll('.selected > input')).filter(
+    el => {
+      const [x, y] = getXY(el)
+      if (targetEl['data-vh'] === 'h') {
+        return after ? x >= x0 : x < x0
+      } else {
+        return after ? y >= y0 : y < y0
+      }
+    }
+  )
+}
+
+function onKeyDown(evt) {
+  const inputs = getSelectedInputs(evt.target, false)
+  if (
+    evt.target.tagName !== 'INPUT' ||
+    evt.key !== 'Backspace' ||
+    inputs.length <= 0 ||
+    evt.target.value
+  )
+    return
+  inputs[inputs.length - 1].focus()
+}
+
 function onInput(evt) {
   if (/[\u4e00-\u9fa5]+/.test(evt.data)) {
-    const [x0, y0] = getXY(evt.target)
-    const dir = evt.target['data-vh']
-    Array.from(elTable.querySelectorAll('.selected > input'))
-      .filter(el => {
-        const [x, y] = getXY(el)
-        if (dir === 'h') {
-          return x >= x0
-        } else {
-          return y >= y0
-        }
-      })
-      .forEach((input, i) => {
-        if (!evt.data[i]) return
-        input.value = evt.data[i]
-        check_answer(input)
-      })
+    const inputs = getSelectedInputs(evt.target)
+    for (let i = 0; i < inputs.length; i++) {
+      if (!evt.data[i]) {
+        inputs[i].focus()
+        break
+      }
+      inputs[i].value = evt.data[i]
+      check_answer(inputs[i])
+    }
   }
 }
 
@@ -114,12 +134,14 @@ function cell_click(event) {
     )[0].question
   } else {
     activeQuestion = ansObjs[0].question
+    clickedInput['data-vh'] = activeQuestion.direction
   }
 
   getQuestionCoords(activeQuestion).forEach(({ x, y }) => {
     const td = get_td_by_coor(x, y)
     td.classList.add('selected')
     const input = td.querySelector('input')
+    console.log('/?', !!input)
     input && (input['data-vh'] = clickedInput['data-vh'])
   })
 
@@ -127,12 +149,10 @@ function cell_click(event) {
 }
 
 function showAnswer() {
-  answerTable.map((r, y) =>
-    r.map(
-      (chars, x) =>
-        chars.length && (get_td_by_coor(x, y).innerText = chars[0].char)
-    )
-  )
+  for (let x = 0; x < 10; x++)
+    for (let y = 0; y < 10; y++) {
+      get_td_by_coor(x, y).innerText = getAnswer(x, y)
+    }
 }
 
 // TODO use flex
