@@ -1,0 +1,80 @@
+:root {
+  --cell-font-size: 30px;
+  --cell-wh: 55px;
+  --color-contrast: #9a6d38;
+  --color-dim: #c2ac7a;
+  --color-bg: #eceac5;
+  --color-secondary: #9bb9a8;
+  --color-primary: #44849d;
+}
+
+body {
+  background-color: var(--color-bg);
+}
+
+.table {
+  display: grid;
+  grid-template: repeat(10, 1fr) / repeat(10, 1fr);
+}
+
+.cell {
+  width: var(--cell-wh);
+  height: var(--cell-wh);
+  margin: 0;
+  padding: 0;
+  outline: none;
+}
+
+.empty {
+  background-color: var(--color-dim);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+td {
+  width: 55px;
+  height: 55px;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+tr td {
+  border: 2px solid black;
+  font-size: 30px;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.hint {
+  font-size: 1.5em;
+}
+
+.main {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.input_cell {
+  outline: none;
+  width: var(--cell-wh);
+  height: var(--cell-wh);
+  border: 0;
+  text-align: center;
+  font-size: var(--cell-font-size);
+  background: transparent;
+  padding: 0px;
+}
+
+td.selected {
+  background: var(--color-secondary);
+}
+
+td:focus-within {
+  background: var(--color-primary);
+}
+
+.correct {
+  background-color: var(--color-contrast) !important;
+}
